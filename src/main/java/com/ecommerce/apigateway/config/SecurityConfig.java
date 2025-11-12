@@ -17,18 +17,15 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
-                // disable CSRF (we use JWT, which is stateless)
+                // Disable CSRF (we use JWT, which is stateless)
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
 
-                // core security rules
+                // Define authorization rules
                 .authorizeExchange(exchange -> exchange
-
-                        // whitelist endpoints
                         .pathMatchers("/api/v1/users/register").permitAll()
                         .pathMatchers("/api/v1/users/login").permitAll()
                         .pathMatchers("/.well-known/jwks.json").permitAll()
-
-                        // protect all other requests
+                        .pathMatchers("/actuator/health", "/actuator/prometheus").permitAll()
                         .anyExchange().authenticated())
 
                 // enable JWT validation, it will automatically read the "issuer-uri" from
