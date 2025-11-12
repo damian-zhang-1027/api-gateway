@@ -1,3 +1,42 @@
+server:
+  port: 8888
+
 spring:
   application:
     name: api-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      routes:
+        # route to User Service
+        - id: user-service-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+
+        # route to User Service JWKS endpoint
+        - id: user-service-jwks-route
+          uri: lb://user-service
+          predicates:
+            - Path=/.well-known/jwks.json
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # tell Gateway how to validate JWT
+          # it will use this environment variable to explore the public key of user-service
+          issuer-uri: ${ECOMMERCE_JWT_ISSUER_URL}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE}
+  instance:
+    # make local development also use IP (optional, but useful in mixed environments)
+    prefer-ip-address: true
