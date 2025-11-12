@@ -40,3 +40,9 @@ eureka:
   instance:
     # make local development also use IP (optional, but useful in mixed environments)
     prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"
